@@ -14,23 +14,20 @@
 <script lang="ts">
 import moment from 'moment';
 import { Component, Vue } from 'vue-property-decorator';
-
-// Custom Components
-import { appStore, userStore } from '@/store';
+import { mapGetters } from 'vuex';
 import aniListEventHandler from '@/plugins/AniList/eventHandler';
 import { refreshTimer } from '@/plugins/refreshTimer';
 
-@Component
+@Component({
+  computed: {
+    ...mapGetters('userSettings', ['isAuthenticated']),
+    ...mapGetters('app', ['isLoading']),
+  },
+})
 export default class Refresh extends Vue {
   readonly refreshTimer = refreshTimer;
-
-  get isAuthenticated(): boolean {
-    return userStore.isAuthenticated;
-  }
-
-  get isLoading(): boolean {
-    return appStore.isLoading;
-  }
+  readonly isAuthenticated!: boolean;
+  readonly isLoading!: boolean;
 
   get colorCode(): string {
     if (this.timeUntilRefreshPercentage < 60 && this.timeUntilRefreshPercentage > 30) {
@@ -47,9 +44,15 @@ export default class Refresh extends Vue {
   }
 
   get timerText(): string {
-    const time = this.timeUntilRefresh * 1000;
+    const seconds = (this.timeUntilRefresh % 60).toString().padStart(2, '0');
+    const minutes = Math.floor((this.timeUntilRefresh / 60) % 60)
+      .toString()
+      .padStart(2, '0');
+    const hours = Math.floor(this.timeUntilRefresh / 3600)
+      .toString()
+      .padStart(2, '0');
 
-    return moment(time).format('mm:ss');
+    return `${hours && hours !== '00' ? `${hours}:` : ''}${minutes}:${seconds}`;
   }
 
   get timeUntilRefreshPercentage(): number {
@@ -60,7 +63,7 @@ export default class Refresh extends Vue {
   }
 
   async refreshData() {
-    await appStore.setLoadingState(true);
+    this.$store.commit('app/setLoadingState', true);
 
     // AniList
     try {
@@ -70,7 +73,7 @@ export default class Refresh extends Vue {
       // TODO: Build central error message management
     }
 
-    await appStore.setLoadingState(false);
+    this.$store.commit('app/setLoadingState', false);
   }
 }
 </script>

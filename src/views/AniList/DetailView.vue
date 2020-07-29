@@ -48,8 +48,7 @@ import Loading from '@/components/AniList/DetailElements/Loading.vue';
 import MediaDetails from '@/components/AniList/DetailElements/MediaDetails.vue';
 import StreamingService from '@/components/AniList/DetailElements/StreamingService.vue';
 import UserListSettings from '@/components/AniList/DetailElements/UserListSettings.vue';
-import { IAniListEntry, IAniListMedia } from '@/types';
-import { aniListStore, appStore } from '@/store';
+import { IAniListEntry, IAniListMedia, AniListListStatus } from '@/types';
 
 @Component({
   components: {
@@ -66,7 +65,7 @@ export default class DetailView extends Vue {
   entry: IAniListEntry | null = null;
 
   async created() {
-    await appStore.setLoadingState(true);
+    this.$store.commit('app/setLoadingState', true);
     const aniListId = parseInt(this.$route.params.id, 10);
 
     try {
@@ -76,19 +75,19 @@ export default class DetailView extends Vue {
         return;
       }
 
-      await aniListStore.setCurrentMediaTitle(this.entry.media.title.userPreferred);
+      this.$store.commit('aniList/setCurrentMediaTitle', this.entry.media.title.userPreferred);
     } catch (error) {
-      await appStore.setLoadingState(false);
+      this.$store.commit('app/setLoadingState', false);
       this.$router.back();
 
       return;
     }
 
-    await appStore.setLoadingState(false);
+    this.$store.commit('app/setLoadingState', false);
   }
 
   async updateItem(): Promise<void> {
-    await appStore.setLoadingState(true);
+    this.$store.commit('app/setLoadingState', true);
 
     const aniListId = parseInt(this.$route.params.id, 10);
 
@@ -99,23 +98,30 @@ export default class DetailView extends Vue {
         return;
       }
 
-      await aniListStore.setCurrentMediaTitle(this.entry.media.title.userPreferred);
+      this.$store.commit('aniList/setCurrentMediaTitle', this.entry.media.title.userPreferred);
     } catch (error) {
-      await appStore.setLoadingState(false);
+      this.$store.commit('app/setLoadingState', false);
       this.$router.back();
 
       return;
     }
 
-    await appStore.setLoadingState(false);
+    this.$store.commit('app/setLoadingState', false);
   }
 
   async loadListEntry(aniListId: number): Promise<void> {
-    this.entry = await this.$http.getListEntryByMediaId(aniListId);
-
-    // Media does not exist
-    if (!this.entry) {
-      throw new Error('Media does not exist!');
+    try {
+      this.entry = await this.$http.getListEntryByMediaId(aniListId);
+    } catch (err) {
+      const mediaInfo: IAniListMedia = await this.$http.getAnimeInfo(aniListId);
+      this.entry = {
+        id: 0,
+        progress: 0,
+        score: 0,
+        status: AniListListStatus.PLANNING,
+        updatedAt: 0,
+        media: mediaInfo,
+      };
     }
   }
 
@@ -222,7 +228,7 @@ export default class DetailView extends Vue {
     startDateBeforeNow: boolean,
     endDateBeforeNow: boolean
   ): string {
-    let airingTime = '';
+    let airingTime;
 
     if (startDate && endDate) {
       if (startDateBeforeNow) {

@@ -50,7 +50,7 @@
     "search": "詳細検索",
     "settings": {
       "title": "環境設定",
-      "about": "ゼロツーについて",
+      "about": "三日月について",
       "aniList": "AniList",
       "appSettings": "環境設定",
       "changelog": "最新更新情報",
@@ -167,12 +167,13 @@
       "startDate": "放送開始日："
     },
     "settings": {
-      "aboutZeroTwo": {
+      "about": {
         "version": "バージョン"
       },
       "aniList": {
         "loggedInAs": "{0}として認識しました",
         "refreshRate": "更新のインターバル",
+        "refreshRateRule": "更新のインターバルは５分～５時間（５～３００分）に設定できます！",
         "refreshRateSuffix": "分",
         "refreshRateHint": "このインターバルは「AniList」のサーバーとの次の更新までの時間を決まります。変更したインターバルは次の更新から発動します。"
       },
@@ -249,5 +250,9 @@
   },
   "$vuetify": {
     "noDataText": "データ無し"
+  },
+  "transfer": {
+    "title": "ZeroTwoは「三日月」（みかづき）になる",
+    "text": "ZeroTwoのユーザーの皆様へ\nディスコードの最新更新の情報を読みました方々はもう気づいていました上、ZeroTwoは新たな名前を受けます。\n再名乗るの理由は大体、自分の気持ちに関して、ZeroTwoのアプリはもっと、ニュートラルで、フリーなネーミングが望みます。\nディスコードを使用して、新たなドメインを票決で決めました、mikazuki.moeになります。\n２０２０年４月７日から、zerotwo.orgは使用不能になります上、mikazuki.moeのみが使用可能になります。\nその前に、mikazuki.moeを使用始めて下さい。\nmikazuki.moeに、ログインと環境設定が再設定必要になりますので、ご迷惑をかけまして、申し訳ございません。\nこれからも、「三日月」を使用する方々へ、感謝を言い伝いたいと思いますので、大変ありがとうございます！\n\nニコ愛子\n「三日月」開発者"
   }
 }

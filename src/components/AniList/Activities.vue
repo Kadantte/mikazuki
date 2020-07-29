@@ -1,6 +1,12 @@
 <template>
   <v-container class="py-0 px-1" fluid>
     <v-row>
+      <v-col cols="12" v-if="!activities.length" align-self="center" justify-self="center">
+        <span class="font-weight-bold">
+          {{ $t('$vuetify.noDataText') }}
+        </span>
+      </v-col>
+
       <v-col cols="12" lg="6" v-for="activity in activities" :key="activity.id">
         <v-card max-height="150">
           <v-container class="pa-0">
@@ -64,14 +70,21 @@
 <script lang="ts">
 import moment from 'moment';
 import { Component, Vue } from 'vue-property-decorator';
+import { mapGetters } from 'vuex';
 import ListImage from '@/components/AniList/ListElements/ListImage.vue';
 import { IAniListActivity, AniListType } from '@/types';
-import { aniListStore } from '@/store';
 
-@Component({ components: { ListImage } })
+@Component({
+  components: { ListImage },
+  computed: {
+    ...mapGetters('aniList', ['latestActivities']),
+  },
+})
 export default class Activities extends Vue {
+  readonly latestActivities!: IAniListActivity[];
+
   get activities() {
-    return aniListStore.latestActivities
+    return this.latestActivities
       .filter((item) => !(Object.entries(item).length === 0 && item.constructor === Object))
       .map((activity) => ({
         id: activity.id,
